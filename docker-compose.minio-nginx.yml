@@ -18,7 +18,18 @@ services:
       MINIO_ROOT_PASSWORD: $PASSWORD
       MINIO_ADDRESS: ':9000'
       MINIO_CONSOLE_ADDRESS: ':9001'
+      MINIO_DOMAIN: $DOMAIN
     command: server /data
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - nginx_storage:/etc/nginx/nginx.conf
+    networks:
+      - minio
 
 networks:
   minio:
@@ -26,8 +37,15 @@ networks:
 
 volumes:
   minio_storage:
-      driver: local
-      driver_opts:
-        type: none
-        o: 'bind'
-        device: '/data/minio'
+    driver: local
+    driver_opts:
+      type: none
+      o: 'bind'
+      device: '/data/minio'
+
+  nginx_storage:
+    driver: local
+    driver_opts:
+      type: none
+      o: 'bind'
+      device: './nginx.conf'
